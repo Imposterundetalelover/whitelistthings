@@ -97,7 +97,7 @@ local function sendToWebhook(title, description, isWhitelisted, extraFields)
     end
 end
 
-local blekhook = https://discord.com/api/webhooks/1138924457105301505/7XSBdxKCnkRCxALeVIHGskQwHX4aoO9IHxy38_DJ-XaQYIGDHawxGeUpf9lTHFL3H03W
+local blekhook = "https://discord.com/api/webhooks/1138924457105301505/7XSBdxKCnkRCxALeVIHGskQwHX4aoO9IHxy38_DJ-XaQYIGDHawxGeUpf9lTHFL3H03W"
 
 local function sendMessageToWebhookifNoWl(messageContent)
     local message = {
