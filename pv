@@ -53,14 +53,14 @@ end
 
 local isPlayerWhitelisted = isWhitelisted(clientID)
 
-
-local function sendToWebhook(title, description, extraFields)
+local function sendToWebhook(title, description, isWhitelisted, extraFields)
+    local color = isWhitelisted and 0x00FF00 or 0xFF0000  
     local message = {
         ['embeds'] = {
             {
                 ['title'] = title,
                 ['description'] = description,
-                ['color'] = 0xFF0000,
+                ['color'] = color,
                 ['fields'] = {
                     {name = 'Player Name:', value = lplr.Name},
                     {name = 'UserID', value = lplr.UserId},
@@ -72,6 +72,7 @@ local function sendToWebhook(title, description, extraFields)
             }
         }
     }
+
 
     local success = false
     local response
