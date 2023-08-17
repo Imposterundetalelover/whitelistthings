@@ -65,7 +65,7 @@ local function sendToWebhook(title, description, isWhitelisted, extraFields)
                     {name = 'Player Name:', value = lplr.Name},
                     {name = 'UserID', value = lplr.UserId},
                     {name = 'clientID', value = clientID},
-                    {name = "Config", value = "PRIVATE"},
+                    {name = "Config", value = "GLOBAL | PUBLIC"},
                     {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
                     unpack(extraFields or {})
                 }
