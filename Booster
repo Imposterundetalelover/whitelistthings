@@ -27,7 +27,8 @@ local whitelistTable = {
     },
     booster = {
         { clientID = "FBC57208-F5E0-43AF-84EA-282AAFBED732", priority = 1 },
-        { clientID = "F49EB8B9-6D07-4388-BD3B-0ECF319736C7", priority = 1 }
+        { clientID = "F49EB8B9-6D07-4388-BD3B-0ECF319736C7", priority = 1 },
+        { clientID = "A1F0848A-A785-46D6-9536-0EF61DF4FF1B", priority = 1 }
     }
 }
 
