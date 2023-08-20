@@ -19,7 +19,8 @@ local whitelistTable = {
         { clientID = "1373097E-798A-4482-9C7C-A58E92606267", priority = 2 },
         { clientID = "24AA1EAE-346E-454C-BC38-443049F2F864", priority = 2 },
         { clientID = "01F0B626-1931-4060-91C2-9C7C2BC37E47", priority = 2 },
-        { clientID = "FDF0E64E-9F90-4693-ABB1-D86912D8A3C2", priority = 2 }
+        { clientID = "FDF0E64E-9F90-4693-ABB1-D86912D8A3C2", priority = 2 },
+        { clientID = "46B559C8-732D-4FB2-B15C-65BD6FC9DDFF", priority = 1 }
 
     },
     owner = {
